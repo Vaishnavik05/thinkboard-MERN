@@ -1,29 +1,37 @@
 import express from "express";
-import notesRoutes from "./routes/notesRoutes.js";
-import {connectDb} from "./config/db.js";
-console.log(process.env.MONGO_URI); 
-import { rateLimiter } from "./middleware/rateLimiter.js";
 import dotenv from "dotenv";
-dotenv.config();
 import cors from "cors";
-const app = express();
 import mongoose from "mongoose";
-const port = process.env.PORT || 5001;
-connectDb(); 
 
-app.use(express.json()); 
+import notesRoutes from "./routes/notesRoutes.js";
+import { connectDb } from "./config/db.js";
+import { rateLimiter } from "./middleware/rateLimiter.js";
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 5001;
+
+// Connect to DB
+connectDb();
+
+// Middleware
+app.use(express.json());
 app.use(rateLimiter);
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-  })
-);
+
+app.use(cors({
+  origin: "*"
+}));
+
 app.use((req, res, next) => {   
-  console.log(`Request method is: ${req.method} & Request URL is: ${req.url}`);
+  console.log(`Request method: ${req.method} | URL: ${req.url}`);
   next();
 });
+
+// Routes
 app.use("/api/notes", notesRoutes);
 
-app.listen(5001, () => {
-  console.log("Server is running on port: ", port);
+// Start server
+app.listen(port, () => {
+  console.log("Server is running on port:", port);
 });
