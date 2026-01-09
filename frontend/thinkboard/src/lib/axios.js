@@ -1,8 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-
 const api = axios.create({
-  baseURL: 'https://collaborative-canvas1.onrender.com/api',
+  baseURL: 'http://localhost:5001/api',
 });
-
 export default api;
